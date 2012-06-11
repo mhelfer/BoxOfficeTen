@@ -21,6 +21,7 @@ public class MovieInfo implements RTDomain {
 	
 	private final String TAG = MovieInfo.class.getSimpleName();
 	
+	private String id;
 	private String title;
 	private String poster;
 	private String synopsis;
@@ -34,6 +35,7 @@ public class MovieInfo implements RTDomain {
 	//Constructor from a JSONObject.
 	public MovieInfo(JSONObject movieInfo){
 		try{
+			this.id = movieInfo.getString(ID);
 			this.title = movieInfo.getString(TITLE);
 			this.poster = movieInfo.getJSONObject(POSTERS).getString(PROFILE);
 			this.synopsis = movieInfo.getString(SYNOPSIS);
@@ -57,6 +59,14 @@ public class MovieInfo implements RTDomain {
 		} catch(JSONException jse){
 			Log.e(TAG, "there was a problem creating a BoxOfficeMovie from the response" + jse.getMessage());
 		}
+	}
+	
+	public String getId() {
+		return id;
+	}
+	
+	public void setId(String id) { 
+		this.id = id;
 	}
 	
 	public String getTitle() {

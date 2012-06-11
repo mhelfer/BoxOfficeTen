@@ -27,7 +27,6 @@ public class ReviewListAdapter extends BaseAdapter{
 	
 	private Activity context;
 	private List<Review> data;
-	private int totalReviews;
 
 	public ReviewListAdapter(Activity context){
 		this.context = context;
@@ -48,12 +47,12 @@ public class ReviewListAdapter extends BaseAdapter{
 		return position;
 	}
 	
-	public int getTotalReviews(){
-		return totalReviews;
+	public List<Review> getData(){
+		return data;
 	}
 	
-	public void setTotalReviews(int totalReviews){
-		this.totalReviews = totalReviews;
+	public void setData(List<Review> data){
+		this.data = data;
 	}
 	
 	public void addData(List<Review> moreData){

@@ -33,6 +33,7 @@ public class InterviewAssignmentActivity extends ListActivity implements RTActiv
     private BoxOfficeListAdapter adapter;	
     
     @Override
+    @SuppressWarnings("unchecked") //cast from getLastNonConfigurationInstance
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -47,23 +48,38 @@ public class InterviewAssignmentActivity extends ListActivity implements RTActiv
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				//Intents can be used to navigate between activities. 
-				//This version will send the user to the MovieInfo Page.
+				//Create an intent to the MovieInfoActivity
 				Intent intent = new Intent(InterviewAssignmentActivity.this, MovieInfoActivity.class);
 				
 				//Add the selected movie to the intent so it can be read by the detail page.
 				intent.putExtra(BUNDLE_MOVIE_ID, ((BoxOfficeMovie)adapter.getItem(position)).getId());
 				startActivity(intent);
-			}
-        	
+			}	
         });
         
-        //Build an instance of the RTBoxOfficeRequest
-        RTBoxOfficeRequest request = new RTBoxOfficeRequest.Builder(RT_API_KEY).country("us").limit("10").build();
-        //Android's thread policies disallow network calls on the main thread. So we use an executor to make networking calls
-        new BoxOfficeRequest().execute(request);
-        
+        final List<BoxOfficeMovie> data = (List<BoxOfficeMovie>) getLastNonConfigurationInstance();
+        if(data == null) {
+        	//Build an instance of the RTBoxOfficeRequest
+            RTBoxOfficeRequest request = new RTBoxOfficeRequest.Builder(RT_API_KEY).country("us").limit("10").build();
+            //Android's thread policies disallow network calls on the main thread. So we use an executor to make networking calls
+            new BoxOfficeRequest().execute(request);
+        }
+        else{
+        	adapter.setData(data);
+        	adapter.notifyDataSetChanged();
+        }
     }
+    
+    /**
+     * Optimization to avoid retrieving BoxOffice data again on screen rotation.
+     * This will store the page data, so a reorientation will not require retrieving the data again.
+     */
+    @Override
+    public Object onRetainNonConfigurationInstance() {
+        final List<BoxOfficeMovie> data = adapter.getData();
+        return data;
+    }
+    
     
     /**
      * Implementation of RTRequestExecutor to construct the views based on the box office data.
@@ -92,16 +108,18 @@ public class InterviewAssignmentActivity extends ListActivity implements RTActiv
             	for(int i = 0; i<jsonMovies.length(); i++){
             		jsonMovie = jsonMovies.getJSONObject(i);
             		movies.add(new BoxOfficeMovie(jsonMovie));
+            		
+            		//Populate the returned movies into the listAdapter
+                	adapter.setData(movies);
+                    
+                    //Notify the UI that the data-set has been updated so it can re-populate the list.
+                    adapter.notifyDataSetChanged();
             	}
             } catch(Exception e){
             	Log.e(TAG,"there was a problem parsing the response" + e.getMessage());
             }
             
-            //Populate the returned movies into the listAdapter.
-            adapter.setData(movies);
             
-            //Notify the UI that the data-set has been updated so it can repopulate the list.
-            adapter.notifyDataSetChanged();
         }
     }
 }

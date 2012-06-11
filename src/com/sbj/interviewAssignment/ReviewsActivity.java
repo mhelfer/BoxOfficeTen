@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ListActivity;
@@ -37,9 +38,11 @@ public class ReviewsActivity extends ListActivity implements OnScrollListener, R
 	private String movieId;
 	private int curPage = 1;
 	private boolean readyForNextPage = true;
+	private boolean hasMore = true;
 	
 	
 	@Override
+	@SuppressWarnings("unchecked") //cast from getLastNonConfigurationInstance
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setListAdapter(adapter); 
@@ -48,12 +51,19 @@ public class ReviewsActivity extends ListActivity implements OnScrollListener, R
 		//Retrieve the detail id from the bundle;
 	    Bundle extras = getIntent().getExtras(); 
 	    movieId = extras.getString(BUNDLE_MOVIE_ID);
-		
-		//if there is no movie id, reload the box office list.
-	    if(movieId == null || movieId.equals("")){
-	    	Intent restart = new Intent(this,InterviewAssignmentActivity.class);
-	    	startActivity(restart);
-	    }
+	    
+	    final List<Review> data = (List<Review>) getLastNonConfigurationInstance();
+		if(data == null){
+			//if there is no movie id, reload the box office list.
+		    if(movieId == null || movieId.equals("")){
+		    	Intent restart = new Intent(this,InterviewAssignmentActivity.class);
+		    	startActivity(restart);
+		    }
+		}
+		else{
+			adapter.setData(data);
+			adapter.notifyDataSetChanged();
+		}  
 	}
 	
 	/**
@@ -69,16 +79,12 @@ public class ReviewsActivity extends ListActivity implements OnScrollListener, R
 			boolean loadMore = firstVisibleItem + visibleItemCount >= totalItemCount;
 			
 			//ready for next page is a very simplistic synchronization to ensure we don't retrieve the list more than once.
-			if(loadMore && readyForNextPage) {
-				
-				//Stop trying to make requests if we've received all the reviews. 
-				if(totalItemCount == 0 || totalItemCount < adapter.getTotalReviews()){
-					readyForNextPage = false;
-					RTReviewRequest request = new RTReviewRequest.Builder(RT_API_KEY, movieId )
-													.pageLimit(String.valueOf(PAGE_SIZE))
-													.page(String.valueOf(curPage++)).build();
-					new ReviewRequest().execute(request);
-				}
+			if(loadMore && readyForNextPage && hasMore) {
+				readyForNextPage = false;
+				RTReviewRequest request = new RTReviewRequest.Builder(RT_API_KEY, movieId )
+												.pageLimit(String.valueOf(PAGE_SIZE))
+												.page(String.valueOf(curPage++)).build();
+				new ReviewRequest().execute(request);
 	        }
 		}
 		
@@ -89,6 +95,15 @@ public class ReviewsActivity extends ListActivity implements OnScrollListener, R
 		//Not sure what to do here	
 	}
 	
+	/**
+     * Optimization to avoid retrieving BoxOffice data again on screen rotation.
+     * This will store the page data, so a reorientation will not require retrieving the data again.
+     */
+    @Override
+    public Object onRetainNonConfigurationInstance() {
+        final List<Review> data = adapter.getData();
+        return data;
+    }
 	
 	/**
      * Implementation of RTRequestExecutor to retrieve the review data and construct views with the returned information.
@@ -107,11 +122,17 @@ public class ReviewsActivity extends ListActivity implements OnScrollListener, R
             Log.d(TAG,result.toString());
             
             List<Review> reviews = new ArrayList<Review>();
-            int totalReviews = 0;
             try{
+            	//Attempt to retrieve the next link if it fails set the more indicator to false;
+            	try{
+            		result.getJSONObject(Review.LINKS).get("next");
+            	}
+            	catch(JSONException e){
+            		hasMore = false;
+            	}
+            	
             	//Long-term this could be better served using a GSON.fromJSON call but without the schema's it was easier to manually
             	//parse the response into a smaller object containing only the members I needed.
-            	totalReviews = result.getInt(Review.TOTAL);
             	JSONArray jsonReviews = (JSONArray)result.get(Review.REVIEWS);
             	JSONObject jsonReview = null;
             	
@@ -125,10 +146,8 @@ public class ReviewsActivity extends ListActivity implements OnScrollListener, R
             }
              
             adapter.addData(reviews);
-            adapter.setTotalReviews(totalReviews);
             adapter.notifyDataSetChanged();
             readyForNextPage = true;
         } 
 	}
-	
 }

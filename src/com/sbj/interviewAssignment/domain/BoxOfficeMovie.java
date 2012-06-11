@@ -2,13 +2,16 @@ package com.sbj.interviewAssignment.domain;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.sbj.interviewAssignment.R;
+import com.sbj.interviewAssignment.requests.RTMoviePosterRequest;
 
 
 /**
@@ -39,6 +42,7 @@ public class BoxOfficeMovie implements RTDomain{
 	private String rating;
 	private String poster;
 	private int freshness;
+	private Bitmap bitmap;
 	
 	//Constructor from a JSONObject.
 	public BoxOfficeMovie(JSONObject movie){
@@ -48,6 +52,19 @@ public class BoxOfficeMovie implements RTDomain{
 			this.rating = movie.get(MPAA_RATING).toString();
 			this.poster = movie.getJSONObject(POSTERS).get(THUMBNAIL).toString();
 			this.freshness = Integer.parseInt(movie.getJSONObject(RATINGS).get(CRITICS_SCORE).toString());
+			
+			try{
+				//Retrieve the bitmap image from the URL.
+				Bitmap posterImage = new RTMoviePosterRequest().execute(this.getPoster()).get();
+				this.bitmap = posterImage;
+			} catch(ExecutionException ee){
+				Log.e(TAG, "There was a problem retrieving the movie poster " + ee.getMessage());
+			} catch(InterruptedException ie){
+				Log.e(TAG, "There was a problem retrieving the movie poster " + ie.getMessage());
+				//propigate the interuption
+				Thread.currentThread().interrupt();
+			}
+			
 			
 		} catch(JSONException jse){
 			Log.e(TAG, "there was a problem creating a BoxOfficeMovie from the response" + jse.getMessage());
@@ -92,5 +109,13 @@ public class BoxOfficeMovie implements RTDomain{
 	
 	public void setFreshness(int freshness) {
 		this.freshness = freshness;
+	}
+
+	public Bitmap getBitmap() {
+		return bitmap;
+	}
+
+	public void setBitmap(Bitmap bitmap) {
+		this.bitmap = bitmap;
 	}
 }

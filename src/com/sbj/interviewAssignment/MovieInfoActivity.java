@@ -36,43 +36,115 @@ public class MovieInfoActivity extends Activity implements RTActivity{
 	
 	//Instance member so it can be accessed by the AsyncTask
 	private MovieInfo movieInfo = null;
+	private String movieId;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.movieinfo);
 	    
-	    //Retrieve the detail id from the bundle;
-	    Bundle extras = getIntent().getExtras(); 
-	    final String movieId = extras.getString(BUNDLE_MOVIE_ID);
-	    
-	    //if there is no movie id, reload the box office list.
-	    if(movieId == null || movieId.equals("")){
-	    	Intent restart = new Intent(this,InterviewAssignmentActivity.class);
-	    	startActivity(restart);
+	    movieInfo = (MovieInfo) getLastNonConfigurationInstance();
+	    if(movieInfo == null){
+	    	//Retrieve the detail id from the bundle;
+		    Bundle extras = getIntent().getExtras(); 
+		    movieId = extras.getString(BUNDLE_MOVIE_ID);
+		    
+		    //if there is no movie id, reload the box office list.
+		    if(movieId == null || movieId.equals("")){
+		    	Intent restart = new Intent(this,InterviewAssignmentActivity.class);
+		    	startActivity(restart);
+		    }
+		    else {
+		    	//Retrieve the movieInfo details in a different thread.
+		    	RTMovieInfoRequest request = new RTMovieInfoRequest.Builder(RT_API_KEY, movieId ).build();
+		    	new MovieInfoRequest().execute(request);
+		    }
+		    
+		    
 	    }
 	    else {
-	    	//Retrieve the movieInfo details in a different thread.
-	    	RTMovieInfoRequest request = new RTMovieInfoRequest.Builder(RT_API_KEY, movieId ).build();
-	    	new MovieInfoRequest().execute(request);
+	    	buildUI(movieInfo);
 	    }
-	    
-	    //Create onClick behavior for the reviews button.
-	    Button button = (Button)findViewById(R.id.infoReviewButton);
+	}
+	
+	/**
+	 * Method for UI population.
+	 * 
+	 * @param movieInfo
+	 */
+	private void buildUI(final MovieInfo movieInfo){
+		
+		TextView title = (TextView)findViewById(R.id.infoTitle);
+        title.setText(movieInfo.getTitle());
+        
+        ImageView poster = (ImageView)findViewById(R.id.infoPoster);
+        
+        try { 
+        	//Attempt to get the movie poster.
+        	Bitmap posterImage = new RTMoviePosterRequest().execute(movieInfo.getPoster()).get();
+        	poster.setImageBitmap(posterImage);
+        	poster.setContentDescription(movieInfo.getTitle() + " " + R.string.boxOfficePoster);
+        	//if an exception occurs replace the desired image with a local not found image to preserve the UI.
+        } catch(ExecutionException ee){
+        	poster.setImageResource(R.drawable.notavailable_detail);
+			Log.e(TAG, "There was a problem retrieving the movie poster " + ee.getMessage());
+		} catch(InterruptedException ie){
+			poster.setImageResource(R.drawable.notavailable_detail);
+			//Propagate the interruption
+			Log.e(TAG, "The movie poster thread was interupted " + ie.getMessage());
+			Thread.currentThread().interrupt();
+		}
+        
+        TextView synopsis = (TextView)findViewById(R.id.infoSynopsis);
+        synopsis.setText(movieInfo.getSynopsis());
+        
+        TextView rated = (TextView)findViewById(R.id.infoRated);
+        rated.setText("Rated " + movieInfo.getRating());
+        
+        TextView freshness = (TextView)findViewById(R.id.infoFreshness);
+        freshness.setText("Freshness " + movieInfo.getFreshness() + "%");
+        
+        TextView runtime = (TextView)findViewById(R.id.infoRuntime);
+        int time = Integer.parseInt(movieInfo.getRuntime());
+        runtime.setText(time/60 + "hrs " + time%60 + "mins");
+        
+        //Linear layout was used inside of a relative layout, since it is easier to add a list of items dynamically
+        LinearLayout layout = (LinearLayout)findViewById(R.id.infoCastLayout);
+        
+        //Dynamically create views' for the cast members and add it to the layout.
+        for(Cast character : movieInfo.getCast()){
+        	final TextView textView = new TextView(MovieInfoActivity.this);
+        	textView.setText(character.getName() + " as " + character.getCharacter());
+        	textView.setTextColor(Color.BLACK);
+        	layout.addView(textView);
+        }
+        
+        //Create onClick behavior for the reviews button.
+	    Button button = (Button)MovieInfoActivity.this.findViewById(R.id.infoReviewButton);
 	    button.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				//Intents can be used to navigate between activities. This version will direct
-				//the user to the Review Page.
+				//Create an intent to the ReviewsActivity
 				Intent intent = new Intent(MovieInfoActivity.this, ReviewsActivity.class);
 				
 				//Add the selected movie to the intent so it can be read by the detail page.
-				intent.putExtra(BUNDLE_MOVIE_ID, movieId);
+				intent.putExtra(BUNDLE_MOVIE_ID, movieInfo.getId());
 				startActivity(intent);
 			}
 		});
 	}
+	
+	/**
+     * Optimization to avoid retrieving BoxOffice data again on screen rotation.
+     * This will store the page data, so a reorientation will not require retrieving the data again.
+     */
+    @Override
+    public Object onRetainNonConfigurationInstance() {
+        final MovieInfo data = movieInfo;
+        return data;
+    }
+	
 	
 	/**
      * Implementation of RTRequestExecutor to retrieve the movieInfo data and construct views with the returned information.
@@ -93,58 +165,11 @@ public class MovieInfoActivity extends Activity implements RTActivity{
             try{
             	//Construct a movie info object from the result object.
             	movieInfo = new MovieInfo(result);
+            	
+            	//populate the UI elements with the data returned.
+            	buildUI(movieInfo);
             } catch(Exception e){
             	Log.e(TAG,"there was a problem parsing the response" + e.getMessage());
-            }
-            
-            //populate the UI elements with the data returned.
-            if(movieInfo != null) {
-            	
-            	TextView title = (TextView)findViewById(R.id.infoTitle);
-                title.setText(movieInfo.getTitle());
-                
-                ImageView poster = (ImageView)findViewById(R.id.infoPoster);
-                
-                try { 
-                	//Attempt to get the movie poster.
-                	Bitmap posterImage = new RTMoviePosterRequest().execute(movieInfo.getPoster()).get();
-                	poster.setImageBitmap(posterImage);
-                
-                	//if an exception occurs replace the desired image with a local not found image to preserve the UI.
-                } catch(ExecutionException ee){
-                	poster.setImageResource(R.drawable.notavailable_detail);
-    				Log.e(TAG, "There was a problem retrieving the movie poster " + ee.getMessage());
-    			} catch(InterruptedException ie){
-    				poster.setImageResource(R.drawable.notavailable_detail);
-    				//Propagate the interruption
-    				Log.e(TAG, "The movie poster thread was interupted " + ie.getMessage());
-    				Thread.currentThread().interrupt();
-    			}
-                
-                TextView synopsis = (TextView)findViewById(R.id.infoSynopsis);
-                synopsis.setText(movieInfo.getSynopsis());
-                
-                TextView rated = (TextView)findViewById(R.id.infoRated);
-                rated.setText("Rated " + movieInfo.getRating());
-                
-                TextView freshness = (TextView)findViewById(R.id.infoFreshness);
-                freshness.setText("Freshness " + movieInfo.getFreshness() + "%");
-                
-                TextView runtime = (TextView)findViewById(R.id.infoRuntime);
-                int time = Integer.parseInt(movieInfo.getRuntime());
-                runtime.setText(time/60 + "hrs " + time%60 + "mins");
-                
-                //Linear layout was used inside of a relative layout, since it is easier to add a list of items dynamically
-                LinearLayout layout = (LinearLayout)findViewById(R.id.infoCastLayout);
-                
-                //Dynamically create views' for the cast members and add it to the layout.
-                for(Cast character : movieInfo.getCast()){
-                	final TextView textView = new TextView(MovieInfoActivity.this);
-                	textView.setText(character.getName() + " as " + character.getCharacter());
-                	textView.setTextColor(Color.BLACK);
-                	layout.addView(textView);
-                }
-                
             }
         }
     }
