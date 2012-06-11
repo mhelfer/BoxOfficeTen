@@ -30,7 +30,7 @@ public class HttpGetDao {
 	 * If there is a problem with the call a null object will be returned.
 	 * @param targetUrl
 	 */
-	public HttpGetDao(String targetUrl){
+	public HttpGetDao(String targetUrl) {
 		this.targetUrl = targetUrl;
 	}
 	
@@ -57,7 +57,7 @@ public class HttpGetDao {
 			int httpStatus = urlConn.getResponseCode();
 			
 			//Ensure that we only take action on successful return codes.
-			switch(httpStatus){
+			switch(httpStatus) {
 				case 200:
 				case 201:
 					
@@ -69,7 +69,7 @@ public class HttpGetDao {
 		            while ((line = br.readLine()) != null) {
 		                sb.append(line);
 		            }
-		            if(sb != null){
+		            if(sb != null) {
 		            	json = new JSONObject(sb.toString());
 		            }
 		            break;
@@ -77,7 +77,7 @@ public class HttpGetDao {
 		        	Log.e(TAG,"Request was not successful httpStatus:"+httpStatus);
 			}
             
-		} catch(MalformedURLException mue){
+		} catch(MalformedURLException mue) {
 			//JSONObject returned is null
 			Log.e(TAG, "Invalid URL:" + targetUrl + " " + mue.getMessage());
 		} catch(IOException ioe) {
@@ -88,7 +88,7 @@ public class HttpGetDao {
 			Log.e(TAG, "There was a problem parsing the JSON " + je.getMessage());
 		}
 		finally {
-			if(urlConn != null){
+			if(urlConn != null) {
 				//release the connection
 				urlConn.disconnect();
 			}

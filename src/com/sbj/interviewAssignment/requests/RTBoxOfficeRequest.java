@@ -31,16 +31,16 @@ public class RTBoxOfficeRequest implements RTRequest{
 		private String country = "us";
 		private String limit = "10";
 		
-		public Builder(String apiKey){
+		public Builder(String apiKey) {
 			this.apiKey = apiKey;
 		}
 		
-		public Builder country(String val){
+		public Builder country(String val) {
 			country = val;
 			return this;
 		}
 		
-		public Builder limit(String val){
+		public Builder limit(String val) {
 			limit = val;
 			return this;
 		}
@@ -55,7 +55,7 @@ public class RTBoxOfficeRequest implements RTRequest{
 	 * 
 	 * @param builder
 	 */
-	private RTBoxOfficeRequest(Builder builder){
+	private RTBoxOfficeRequest(Builder builder) {
 		country = builder.country;
 		limit = builder.limit;
 		apiKey = builder.apiKey;
@@ -65,23 +65,23 @@ public class RTBoxOfficeRequest implements RTRequest{
 	 * Constructs the proper URL for making a BoxOfficeRequest
 	 */
 	@Override
-	public String getQueryURL(){
+	public String getQueryURL() {
 		StringBuilder query = new StringBuilder();
 		
 		query.append(RT_BO_URL);
 		query.append("?");
 		
-		if(StringUtils.isNotBlank(country)){
+		if(StringUtils.isNotBlank(country)) {
 			query.append("country=");	
 			query.append(country);
 		}
 		
-		if(StringUtils.isNotBlank(limit)){
+		if(StringUtils.isNotBlank(limit)) {
 			query.append("&limit=");
 			query.append(limit);
 		}
 		
-		if(StringUtils.isNotBlank(apiKey)){
+		if(StringUtils.isNotBlank(apiKey)) {
 			query.append("&apiKey=");
 			query.append(apiKey);
 		}

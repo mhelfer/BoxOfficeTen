@@ -2,12 +2,16 @@ package com.sbj.interviewAssignment.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
 import android.util.Log;
+
+import com.sbj.interviewAssignment.requests.RTMoviePosterRequest;
 
 /**
  * Domain object for storing movieInfo data
@@ -29,6 +33,7 @@ public class MovieInfo implements RTDomain {
 	private String freshness;
 	private String runtime;
 	private String rtLink;
+	private Bitmap bitmap;
 	
 	private List<Cast> cast;
 	
@@ -38,6 +43,21 @@ public class MovieInfo implements RTDomain {
 			this.id = movieInfo.getString(ID);
 			this.title = movieInfo.getString(TITLE);
 			this.poster = movieInfo.getJSONObject(POSTERS).getString(PROFILE);
+			
+			try { 
+	        	//Attempt to get the movie poster.
+	        	Bitmap posterImage = new RTMoviePosterRequest().execute(this.poster).get();
+	        	bitmap = posterImage;
+	        	
+	        	//if an exception occurs replace the desired image with a local not found image to preserve the UI.
+	        } catch(ExecutionException ee){
+				Log.e(TAG, "There was a problem retrieving the movie poster " + ee.getMessage());
+			} catch(InterruptedException ie){
+				//Propagate the interruption
+				Log.e(TAG, "The movie poster thread was interupted " + ie.getMessage());
+				Thread.currentThread().interrupt();
+			}
+			
 			this.synopsis = movieInfo.getString(SYNOPSIS);
 			this.rating = movieInfo.getString(MPAA_RATING);
 			this.freshness = movieInfo.getJSONObject(RATINGS).getString(CRITICS_SCORE);
@@ -131,5 +151,13 @@ public class MovieInfo implements RTDomain {
 	
 	public void setRtLink(String rtLink) {
 		this.rtLink = rtLink;
+	}
+
+	public Bitmap getBitmap() {
+		return bitmap;
+	}
+
+	public void setBitmap(Bitmap bitmap) {
+		this.bitmap = bitmap;
 	}
 }

@@ -8,7 +8,7 @@ package com.sbj.interviewAssignment.requests;
  * @author mhelfer
  *
  */
-public class RTMovieInfoRequest implements RTRequest{
+public class RTMovieInfoRequest implements RTRequest {
 	
 	private static final String RT_BO_URL = "http://api.rottentomatoes.com/api/public/v1.0/movies/%s.json";
 
@@ -25,12 +25,12 @@ public class RTMovieInfoRequest implements RTRequest{
 		private final String apiKey;
 		private final String movieId;
 		
-		public Builder(String apiKey, String movieId){
+		public Builder(String apiKey, String movieId) {
 			this.apiKey = apiKey;
 			this.movieId = movieId;
 		}
 		
-		public RTMovieInfoRequest build(){
+		public RTMovieInfoRequest build() {
 			return new RTMovieInfoRequest(this);
 		}
 	}
@@ -40,7 +40,7 @@ public class RTMovieInfoRequest implements RTRequest{
 	 * 
 	 * @param builder
 	 */
-	private RTMovieInfoRequest(Builder builder){
+	private RTMovieInfoRequest(Builder builder) {
 		this.apiKey = builder.apiKey;
 		this.movieId = builder.movieId;
 	}

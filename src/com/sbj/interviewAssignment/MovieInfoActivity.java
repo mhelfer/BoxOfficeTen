@@ -1,12 +1,9 @@
 package com.sbj.interviewAssignment;
 
-import java.util.concurrent.ExecutionException;
-
 import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,7 +18,6 @@ import android.widget.TextView;
 import com.sbj.interviewAssignment.domain.Cast;
 import com.sbj.interviewAssignment.domain.MovieInfo;
 import com.sbj.interviewAssignment.requests.RTMovieInfoRequest;
-import com.sbj.interviewAssignment.requests.RTMoviePosterRequest;
 import com.sbj.interviewAssignment.requests.RTRequestExecutor;
 
 /**
@@ -79,21 +75,13 @@ public class MovieInfoActivity extends Activity implements RTActivity{
         
         ImageView poster = (ImageView)findViewById(R.id.infoPoster);
         
-        try { 
-        	//Attempt to get the movie poster.
-        	Bitmap posterImage = new RTMoviePosterRequest().execute(movieInfo.getPoster()).get();
-        	poster.setImageBitmap(posterImage);
-        	poster.setContentDescription(movieInfo.getTitle() + " " + R.string.boxOfficePoster);
-        	//if an exception occurs replace the desired image with a local not found image to preserve the UI.
-        } catch(ExecutionException ee){
+        if(movieInfo.getBitmap() == null) {
         	poster.setImageResource(R.drawable.notavailable_detail);
-			Log.e(TAG, "There was a problem retrieving the movie poster " + ee.getMessage());
-		} catch(InterruptedException ie){
-			poster.setImageResource(R.drawable.notavailable_detail);
-			//Propagate the interruption
-			Log.e(TAG, "The movie poster thread was interupted " + ie.getMessage());
-			Thread.currentThread().interrupt();
-		}
+        }
+        else {
+        	poster.setImageBitmap(movieInfo.getBitmap());
+        	poster.setContentDescription(movieInfo.getTitle() + " " + R.string.boxOfficePoster);
+        }
         
         TextView synopsis = (TextView)findViewById(R.id.infoSynopsis);
         synopsis.setText(movieInfo.getSynopsis());

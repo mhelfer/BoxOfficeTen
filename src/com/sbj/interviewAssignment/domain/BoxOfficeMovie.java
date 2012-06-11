@@ -45,7 +45,7 @@ public class BoxOfficeMovie implements RTDomain{
 	private Bitmap bitmap;
 	
 	//Constructor from a JSONObject.
-	public BoxOfficeMovie(JSONObject movie){
+	public BoxOfficeMovie(JSONObject movie) {
 		try{
 			this.id = movie.get(ID).toString();
 			this.title = movie.get(TITLE).toString();
@@ -66,16 +66,16 @@ public class BoxOfficeMovie implements RTDomain{
 			}
 			
 			
-		} catch(JSONException jse){
+		} catch(JSONException jse) {
 			Log.e(TAG, "there was a problem creating a BoxOfficeMovie from the response" + jse.getMessage());
 		}
 	}
 	
-	public String getId(){
+	public String getId() {
 		return id;
 	}
 	
-	public void setId(String id){
+	public void setId(String id) {
 		this.id = id;
 	}
 	

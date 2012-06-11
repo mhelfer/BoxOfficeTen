@@ -13,7 +13,7 @@ import android.util.Log;
  * @author mhelfer
  *
  */
-public class Review implements RTDomain{
+public class Review implements RTDomain {
 	private final String TAG = Review.class.getSimpleName();
 	
 	private String critic;
@@ -23,7 +23,7 @@ public class Review implements RTDomain{
 	private String fullReviewUrl;
 	
 	//Constructor from a JSONObject.
-	public Review(JSONObject review){
+	public Review(JSONObject review) {
 		try{
 			critic = review.getString(CRITIC);
 			publication = review.getString(PUBLICATION);
@@ -31,7 +31,7 @@ public class Review implements RTDomain{
 			quote = review.getString(QUOTE);
 			fullReviewUrl = review.getJSONObject(LINKS).getString(REVIEW);
 			
-		} catch(JSONException jse){
+		} catch(JSONException jse) {
 			Log.e(TAG, "there was a problem creating a Review from the response" + jse.getMessage());
 		}
 	}

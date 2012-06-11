@@ -61,7 +61,7 @@ public class RTReviewRequest implements RTRequest {
 			return this;
 		}
 		
-		public RTReviewRequest build(){
+		public RTReviewRequest build() {
 			return new RTReviewRequest(this);
 		}
 	}
@@ -94,22 +94,22 @@ public class RTReviewRequest implements RTRequest {
 		query.append("apiKey=");
 		query.append(apiKey);
 		
-		if(StringUtils.isNotBlank(reviewType)){
+		if(StringUtils.isNotBlank(reviewType)) {
 			query.append("&review_type=");
 			query.append(reviewType);
 		}
 		
-		if(StringUtils.isNotBlank(pageLimit)){
+		if(StringUtils.isNotBlank(pageLimit)) {
 			query.append("&page_limit=");
 			query.append(pageLimit);
 		}
 		
-		if(StringUtils.isNotBlank(page)){
+		if(StringUtils.isNotBlank(page)) {
 			query.append("&page=");
 			query.append(page);
 		}
 		
-		if(StringUtils.isNotBlank(country)){
+		if(StringUtils.isNotBlank(country)) {
 			query.append("&country=");
 			query.append(country);
 		}
