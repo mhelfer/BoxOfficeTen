@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, InterviewAssignmentActivity!</string>
     <string name="app_name">InterviewAssignment</string>
-
+	<string name="movieDetails">Movie Details</string>
+	<string name="synopsis">Synopsis</string>
+	<string name="cast">Cast</string>
+    
 </resources>

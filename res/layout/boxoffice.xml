@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <ImageView
+        android:id="@+id/boxOfficePoster"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_launcher" 
+        android:layout_centerVertical="true"/>
+
+    <TextView
+        android:id="@+id/boxOfficeName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="5dp"
+        android:layout_toRightOf="@+id/boxOfficePoster"
+        android:textSize="24sp" 
+        android:singleLine="true"
+        android:textStyle="bold"
+        android:minHeight="14dp"
+        android:textColor="@android:color/black"/>
+    
+    <ImageView
+        android:id="@+id/boxOfficeRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_toRightOf="@+id/boxOfficeName"
+        android:visibility="visible"/>
+
+    <ProgressBar
+        android:id="@+id/boxOfficeFreshness"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/boxOfficeName" 
+        android:layout_toRightOf="@+id/boxOfficePoster"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:max="100"/>
+
+</RelativeLayout>
