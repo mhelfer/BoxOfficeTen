@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:src="@drawable/fresh" />
+        android:contentDescription="@string/freshness"/>
     
     <TextView
         android:id="@+id/reviewName"
@@ -18,8 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/reviewFreshness"
-        android:textColor="@android:color/black"
-        android:text="TextView" />
+        android:textColor="@android:color/black" />
 
     <TextView
         android:id="@+id/reviewQuote"
@@ -28,8 +27,7 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/reviewFreshness"
         android:layout_marginLeft="10dp"
-        android:textColor="@android:color/black"
-        android:text="TextView" />
+        android:textColor="@android:color/black"/>
 
     <TextView
         android:id="@+id/reviewUrl"
@@ -37,7 +35,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/reviewQuote"
         android:layout_marginLeft="10dp"
-        android:textColor="@android:color/black"
-        android:text="TextView" />
+        android:textColor="@android:color/black"/>
     
 </RelativeLayout>

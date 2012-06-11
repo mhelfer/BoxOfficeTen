@@ -5,5 +5,10 @@
 	<string name="movieDetails">Movie Details</string>
 	<string name="synopsis">Synopsis</string>
 	<string name="cast">Cast</string>
+	
+	<string name="reviews">Reviews</string>
+	<string name="boxOfficePoster">Box Office Poster</string>
+	<string name="boxOfficeRating">Box Office Rating</string>
+	<string name="freshness">Freshness</string>
     
 </resources>

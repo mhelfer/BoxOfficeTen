@@ -10,7 +10,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:src="@drawable/ic_launcher" 
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/boxOfficePoster"/>
 
     <TextView
         android:id="@+id/boxOfficeName"
@@ -33,7 +34,8 @@
         android:layout_marginTop="10dp"
         android:layout_marginRight="5dp"
         android:layout_toRightOf="@+id/boxOfficeName"
-        android:visibility="visible"/>
+        android:visibility="visible"
+        android:contentDescription="@string/boxOfficeRating"/>
 
     <ProgressBar
         android:id="@+id/boxOfficeFreshness"

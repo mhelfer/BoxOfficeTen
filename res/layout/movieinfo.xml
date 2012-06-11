@@ -28,7 +28,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_below="@+id/infoTitle"/>
+            android:layout_below="@+id/infoTitle"
+            android:contentDescription="@string/boxOfficePoster"/>
 
         <TextView
             android:id="@+id/infolabelSynopsis"
@@ -75,7 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/infoCastLayout"
             android:layout_centerHorizontal="true"
-            android:text="Reviews" />
+            android:text="@string/reviews" />
         
         <TextView 
             android:id="@+id/footerSeperator"
