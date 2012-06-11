@@ -133,34 +133,38 @@ public class MovieInfoActivity extends Activity implements RTActivity{
         return data;
     }
 	
-	
 	/**
-     * Implementation of RTRequestExecutor to retrieve the movieInfo data and construct views with the returned information.
-     * 
-     * @author mhelfer
-     *
-     */
+	 * Implementation of RTRequestExecutor to retrieve the movieInfo data and construct views with the returned information.
+	 * 
+	 * @author mhelfer
+	 *
+	 */
 	private class MovieInfoRequest extends RTRequestExecutor {
 		
 		/**
-    	 * Populates views with the movie info data.	
-    	 * 
-    	 * @param JSONObject passed after doInBackground method completes.
-    	 */
-        protected void onPostExecute(JSONObject result) {
-            Log.d(TAG,result.toString());
-            
-            try{
-            	//Construct a movie info object from the result object.
-            	movieInfo = new MovieInfo(result);
-            	
-            	//populate the UI elements with the data returned.
-            	buildUI(movieInfo);
-            } catch(Exception e){
-            	Log.e(TAG,"there was a problem parsing the response" + e.getMessage());
-            }
-        }
-    }
+		 * Populates views with the movie info data.	
+		 * 
+		 * @param JSONObject passed after doInBackground method completes.
+		 */
+		protected void onPostExecute(JSONObject result) {
+			if(result != null){
+				Log.d(TAG,result.toString());
+				
+				try{
+					//Construct a movie info object from the result object.
+					movieInfo = new MovieInfo(result);
+					
+					//populate the UI elements with the data returned.
+					buildUI(movieInfo);
+				} catch(Exception e){
+					Log.e(TAG,"there was a problem parsing the response" + e.getMessage());
+				}
+			}
+			else{
+				Log.d(TAG,"JSON object was null");
+			}
+		}
+	}
 	
 	/**
 	 * Method that will create the share button.
@@ -174,9 +178,8 @@ public class MovieInfoActivity extends Activity implements RTActivity{
 		intent.putExtra(Intent.EXTRA_TEXT, movieInfo.getRtLink());	
 		intent.setType("text/plain");
 		
-	    menu.add("Share").setIntent(intent);	    
-	    
-	    return super.onCreateOptionsMenu(menu);
+		menu.add("Share").setIntent(intent);	    
+		
+		return super.onCreateOptionsMenu(menu);
 	}
-
 }

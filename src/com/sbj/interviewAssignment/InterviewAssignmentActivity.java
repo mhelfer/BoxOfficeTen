@@ -95,31 +95,34 @@ public class InterviewAssignmentActivity extends ListActivity implements RTActiv
     	 * @param JSONObject passed after doInBackground method completes.
     	 */
         protected void onPostExecute(JSONObject result) {
-            Log.d(TAG,result.toString());
-            List<BoxOfficeMovie> movies = new ArrayList<BoxOfficeMovie>();
+            if(result != null){
+            	Log.d(TAG,result.toString());
+                List<BoxOfficeMovie> movies = new ArrayList<BoxOfficeMovie>();
 
-            try{
-            	//Long-term this could be better served using a GSON.fromJSON call but without the schema's it was easier to manually
-            	//parse the response into a smaller object containing only the members I needed.
-            	JSONArray jsonMovies = (JSONArray)result.get(BoxOfficeMovie.MOVIES);
-            	JSONObject jsonMovie = null;
-            	
-            	//Build the List of box office movies
-            	for(int i = 0; i<jsonMovies.length(); i++){
-            		jsonMovie = jsonMovies.getJSONObject(i);
-            		movies.add(new BoxOfficeMovie(jsonMovie));
-            		
-            		//Populate the returned movies into the listAdapter
-                	adapter.setData(movies);
-                    
-                    //Notify the UI that the data-set has been updated so it can re-populate the list.
-                    adapter.notifyDataSetChanged();
-            	}
-            } catch(Exception e){
-            	Log.e(TAG,"there was a problem parsing the response" + e.getMessage());
+                try{
+                	//Long-term this could be better served using a GSON.fromJSON call but without the schema's it was easier to manually
+                	//parse the response into a smaller object containing only the members I needed.
+                	JSONArray jsonMovies = (JSONArray)result.get(BoxOfficeMovie.MOVIES);
+                	JSONObject jsonMovie = null;
+                	
+                	//Build the List of box office movies
+                	for(int i = 0; i<jsonMovies.length(); i++){
+                		jsonMovie = jsonMovies.getJSONObject(i);
+                		movies.add(new BoxOfficeMovie(jsonMovie));
+                		
+                		//Populate the returned movies into the listAdapter
+                    	adapter.setData(movies);
+                        
+                        //Notify the UI that the data-set has been updated so it can re-populate the list.
+                        adapter.notifyDataSetChanged();
+                	}
+                } catch(Exception e){
+                	Log.e(TAG,"there was a problem parsing the response" + e.getMessage());
+                }
             }
-            
-            
+            else {
+            	Log.d(TAG,"JSON object was null");
+            }
         }
     }
 }

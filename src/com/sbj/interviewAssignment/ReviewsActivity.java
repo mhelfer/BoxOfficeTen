@@ -40,7 +40,6 @@ public class ReviewsActivity extends ListActivity implements OnScrollListener, R
 	private boolean readyForNextPage = true;
 	private boolean hasMore = true;
 	
-	
 	@Override
 	@SuppressWarnings("unchecked") //cast from getLastNonConfigurationInstance
 	protected void onCreate(Bundle savedInstanceState) {
@@ -119,35 +118,40 @@ public class ReviewsActivity extends ListActivity implements OnScrollListener, R
     	 * @param JSONObject passed after doInBackground method completes.
     	 */
         protected void onPostExecute(JSONObject result) {
-            Log.d(TAG,result.toString());
-            
-            List<Review> reviews = new ArrayList<Review>();
-            try{
-            	//Attempt to retrieve the next link if it fails set the more indicator to false;
-            	try{
-            		result.getJSONObject(Review.LINKS).get("next");
-            	}
-            	catch(JSONException e){
-            		hasMore = false;
-            	}
-            	
-            	//Long-term this could be better served using a GSON.fromJSON call but without the schema's it was easier to manually
-            	//parse the response into a smaller object containing only the members I needed.
-            	JSONArray jsonReviews = (JSONArray)result.get(Review.REVIEWS);
-            	JSONObject jsonReview = null;
-            	
-            	for(int i = 0; i<jsonReviews.length(); i++){
-            		jsonReview = jsonReviews.getJSONObject(i);
-            		reviews.add(new Review(jsonReview));
-            	}
-            	
-            } catch(Exception e){
-            	Log.e(TAG,"there was a problem parsing the response" + e.getMessage());
+            if(result != null) {
+	        	Log.d(TAG,result.toString());
+	            
+	            List<Review> reviews = new ArrayList<Review>();
+	            try{
+	            	//Attempt to retrieve the next link if it fails set the more indicator to false;
+	            	try{
+	            		result.getJSONObject(Review.LINKS).get("next");
+	            	}
+	            	catch(JSONException e){
+	            		hasMore = false;
+	            	}
+	            	
+	            	//Long-term this could be better served using a GSON.fromJSON call but without the schema's it was easier to manually
+	            	//parse the response into a smaller object containing only the members I needed.
+	            	JSONArray jsonReviews = (JSONArray)result.get(Review.REVIEWS);
+	            	JSONObject jsonReview = null;
+	            	
+	            	for(int i = 0; i<jsonReviews.length(); i++){
+	            		jsonReview = jsonReviews.getJSONObject(i);
+	            		reviews.add(new Review(jsonReview));
+	            	}
+	            	
+	            } catch(Exception e){
+	            	Log.e(TAG,"there was a problem parsing the response" + e.getMessage());
+	            }
+	             
+	            adapter.addData(reviews);
+	            adapter.notifyDataSetChanged();
+	            readyForNextPage = true;
             }
-             
-            adapter.addData(reviews);
-            adapter.notifyDataSetChanged();
-            readyForNextPage = true;
+            else {
+            	Log.d(TAG,"JSON object was null");
+            }
         } 
 	}
 }

@@ -66,15 +66,15 @@ public class HttpGetDao {
 					StringBuilder sb = new StringBuilder();
 					
 					String line;
-		            while ((line = br.readLine()) != null) {
-		                sb.append(line);
-		            }
-		            if(sb != null) {
-		            	json = new JSONObject(sb.toString());
-		            }
-		            break;
-		        default:
-		        	Log.e(TAG,"Request was not successful httpStatus:"+httpStatus);
+			        while ((line = br.readLine()) != null) {
+			            sb.append(line);
+			        }
+			        if(sb != null) {
+			        	json = new JSONObject(sb.toString());
+			        }
+			        break;
+			    default:
+			    	Log.e(TAG,"Request was not successful httpStatus:"+httpStatus);
 			}
             
 		} catch(MalformedURLException mue) {
